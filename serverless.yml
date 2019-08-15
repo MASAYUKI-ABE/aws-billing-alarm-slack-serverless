@@ -1,0 +1,128 @@
+service: aws-billing-alarm
+
+custom:
+  defaultStage: dev
+  otherfile:
+    environment:
+      dev: ${file(./config/dev.yml)}
+      prod: ${file(./config/prod.yml)}
+  snsTopicName: BillingAlarmToSlackTopic
+  accountId: !Ref AWS::AccountId
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs10.x
+  stage: ${opt:stage, self:custom.defaultStage}
+  profile: ${self:custom.otherfile.environment.${self:provider.stage}.PROFILE}
+
+functions:
+  alarmToSlack:
+    handler: handler.alarmToSlack
+    events:
+      - sns: ${self:custom.snsTopicName}
+    environment:
+      SLACK_WEBHOOK_URL: ${self:custom.otherfile.environment.${self:provider.stage}.SLACK_WEBHOOK_URL}
+
+resources:
+  Resources:
+    OneDollarBillingAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        ActionsEnabled: true
+        AlarmActions:
+          - 'Fn::Join':
+            - ':'
+            - - 'arn:aws:sns'
+              - Ref: 'AWS::Region'
+              - Ref: 'AWS::AccountId'
+              - ${self:custom.snsTopicName}
+        AlarmDescription: Billing Alarm, when this month billing is higher than 1 dollar.
+        AlarmName: OneDollarBillingAlarm
+        ComparisonOperator: GreaterThanThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: Currency
+            Value: USD
+        EvaluationPeriods: 1
+        MetricName: EstimatedCharges
+        Namespace: AWS/Billing
+        Period: 21600
+        Statistic: Maximum
+        Threshold: 1.0
+        TreatMissingData: missing
+    FiveDollarsBillingAlarm:
+        Type: AWS::CloudWatch::Alarm
+        Properties:
+          ActionsEnabled: true
+          AlarmActions:
+            - 'Fn::Join':
+              - ':'
+              - - 'arn:aws:sns'
+                - Ref: 'AWS::Region'
+                - Ref: 'AWS::AccountId'
+                - ${self:custom.snsTopicName}
+          AlarmDescription: Billing Alarm, when this month billing is higher than 5 dollars.
+          AlarmName: FiveDollarsBillingAlarm
+          ComparisonOperator: GreaterThanThreshold
+          DatapointsToAlarm: 1
+          Dimensions:
+            - Name: Currency
+              Value: USD
+          EvaluationPeriods: 1
+          MetricName: EstimatedCharges
+          Namespace: AWS/Billing
+          Period: 21600
+          Statistic: Maximum
+          Threshold: 5.0
+          TreatMissingData: missing
+    TenDollarsBillingAlarm:
+        Type: AWS::CloudWatch::Alarm
+        Properties:
+          ActionsEnabled: true
+          AlarmActions:
+            - 'Fn::Join':
+              - ':'
+              - - 'arn:aws:sns'
+                - Ref: 'AWS::Region'
+                - Ref: 'AWS::AccountId'
+                - ${self:custom.snsTopicName}
+          AlarmDescription: Billing Alarm, when this month billing is higher than 10 dollars.
+          AlarmName: TenDollarsBillingAlarm
+          ComparisonOperator: GreaterThanThreshold
+          DatapointsToAlarm: 1
+          Dimensions:
+            - Name: Currency
+              Value: USD
+          EvaluationPeriods: 1
+          MetricName: EstimatedCharges
+          Namespace: AWS/Billing
+          Period: 21600
+          Statistic: Maximum
+          Threshold: 10.0
+          TreatMissingData: missing
+    TwentyDollarsBillingAlarm:
+        Type: AWS::CloudWatch::Alarm
+        Properties:
+          ActionsEnabled: true
+          AlarmActions:
+            - 'Fn::Join':
+              - ':'
+              - - 'arn:aws:sns'
+                - Ref: 'AWS::Region'
+                - Ref: 'AWS::AccountId'
+                - ${self:custom.snsTopicName}
+          AlarmDescription: Billing Alarm, when this month billing is higher than 20 dollars.
+          AlarmName: TwentyDollarsBillingAlarm
+          ComparisonOperator: GreaterThanThreshold
+          DatapointsToAlarm: 1
+          Dimensions:
+            - Name: Currency
+              Value: USD
+          EvaluationPeriods: 1
+          MetricName: EstimatedCharges
+          Namespace: AWS/Billing
+          Period: 21600
+          Statistic: Maximum
+          Threshold: 20.0
+          TreatMissingData: missing

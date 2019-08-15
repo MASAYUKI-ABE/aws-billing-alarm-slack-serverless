@@ -1,0 +1,15 @@
+{
+  "name": "aws-billing-alarm-serverless",
+  "version": "1.0.0",
+  "description": "alarm to slack by lambda",
+  "main": "handler.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  }
+}
