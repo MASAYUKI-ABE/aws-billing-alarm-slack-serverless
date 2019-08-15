@@ -1,6 +1,7 @@
-# aws-billing-alarm
+# aws-billing-alarm-serverless
 
-請求アラームのsalckへ通知する。
+AWSの1ドル、5ドル、10ドル、20ドルの請求アラームを作成。
+Salckの特定のチャネルへ通知する。
 Serverless Frameworkで構築。
 
 ## 準備

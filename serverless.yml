@@ -1,4 +1,4 @@
-service: aws-billing-alarm
+service: aws-billing-alarm-serverless
 
 custom:
   defaultStage: dev
